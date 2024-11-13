@@ -1,0 +1,12 @@
+@use './variables' as *;
+@mixin background_blue{
+    
+    background-color: $primary_color;
+    color: #fff;
+    
+}
+
+@mixin head_cell{
+    background-color: $primary_color;
+    color: $third_color;
+}
