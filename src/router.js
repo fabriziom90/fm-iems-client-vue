@@ -14,10 +14,16 @@ import AddExit from './components/pages/exits/AddExit.vue';
 import DetailExit from './components/pages/exits/DetailExit.vue';
 import Taxes from './components/pages/taxes/Taxes.vue';
 import DetailTaxes from './components/pages/taxes/DetailTaxes.vue';
+import NotFound from './components/pages/NotFound.vue'
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
+        {
+            path: '/',
+            name: 'homepage',
+            redirect: { name: 'login'}
+        },
         {
             path: '/login',
             name: 'login',
@@ -108,6 +114,11 @@ const router = createRouter({
                         }
                         
                     ]
+                },
+                {
+                    path: '*',
+                    name: 'not-found',
+                    component: NotFound
                 }
             ]
         }
