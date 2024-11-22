@@ -18,6 +18,7 @@ import Table from "../../components/Table.vue";
 import Loader from "../../components/Loader.vue";
 
 import { ref, onMounted, watch } from "vue";
+import { store } from "../../../store.js";
 
 const months = [
   "Gen",
@@ -38,12 +39,16 @@ let data = ref([]);
 let loaded = ref(false);
 
 onMounted(async () => {
-  await axios.get("http://localhost:4000/incomes/net_amount").then((resp) => {
-    data.value = resp.data.net_amounts;
-    setTimeout(() => {
-      loaded.value = true;
-    }, 1800);
-  });
+  await axios
+    .get("http://localhost:4000/incomes/net_amount", {
+      params: { id: store.user.userId },
+    })
+    .then((resp) => {
+      data.value = resp.data.net_amounts;
+      setTimeout(() => {
+        loaded.value = true;
+      }, 1800);
+    });
 });
 </script>
 <style lang=""></style>

@@ -3,13 +3,13 @@
     <div class="d-flex justify-content-center align-items-center h-100">
       <div class="form-card">
         <div class="text-end">
-          <!-- {loginStatus ? (
-                <NavLink to="/admin" class="me-3">
-                  Vai alla tua Dashboard
-                </NavLink>
-              ) : (
-                ""
-            )} -->
+          <router-link
+            :to="{ name: 'dashboard' }"
+            class="me-3"
+            v-if="loginStatus"
+          >
+            Vai alla tua Dashboard
+          </router-link>
           <router-link to="/register">Registrati</router-link>
         </div>
         <div class="logo justify-content-center">
@@ -21,7 +21,7 @@
         </div>
         <div class="form">
           <div class="my-3">
-            <label htmlFor="" class="control-label"> Email </label>
+            <label for="" class="control-label"> Email </label>
             <input
               type="text"
               name="email"
@@ -32,7 +32,7 @@
             />
           </div>
           <div class="my-3">
-            <label htmlFor="" class="control-label"> Password </label>
+            <label for="" class="control-label"> Password </label>
             <input
               type="password"
               name="password"
@@ -57,13 +57,26 @@ import { router } from "../../../router.js";
 
 import { useToast } from "vue-toast-notification";
 
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 
 const $toast = useToast();
 const email = ref("");
 const password = ref("");
+let loginStatus = ref(false);
 
 axios.defaults.withCredentials = true;
+
+onMounted(() => {
+  checkLogin();
+});
+
+const checkLogin = () => {
+  axios.get("http://localhost:4000/users/login").then((resp) => {
+    if (resp.data.loggedIn) {
+      loginStatus.value = true;
+    }
+  });
+};
 
 const login = () => {
   const data = {

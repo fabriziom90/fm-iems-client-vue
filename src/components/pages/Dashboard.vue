@@ -42,6 +42,8 @@ import axios from "axios";
 
 import Table from "../components/Table.vue";
 import Loader from "../components/Loader.vue";
+import { store } from "../../store.js";
+import { useRouter } from "vue-router";
 
 import { ref, onMounted, watch } from "vue";
 
@@ -63,20 +65,38 @@ const months = [
 let data = ref([]);
 let loaded = ref(false);
 
-onMounted(async () => {
-  await axios.get("http://localhost:4000/summary/").then((resp) => {
-    data.value = resp.data.values;
-    setTimeout(() => {
-      loaded.value = true;
-    }, 1800);
+const router = useRouter();
+
+onMounted(() => {
+  axios.get("http://localhost:4000/users/get-user-info").then((resp) => {
+    if (resp.data.result) {
+      store.user = resp.data.user;
+
+      axios
+        .get("http://localhost:4000/summary/", {
+          params: { id: store.user.userId },
+        })
+        .then((resp) => {
+          data.value = resp.data.values;
+          setTimeout(() => {
+            loaded.value = true;
+          }, 1800);
+        });
+    } else {
+      router.push({ name: "login" });
+    }
   });
 });
 
 const reloadTable = async () => {
   // loaded.value = false
-  await axios.get("http://localhost:4000/summary/").then((resp) => {
-    data.value = resp.data.values;
-  });
+  await axios
+    .get("http://localhost:4000/summary/", {
+      params: { id: store.user.userId },
+    })
+    .then((resp) => {
+      data.value = resp.data.values;
+    });
 };
 </script>
 <style lang="scss"></style>

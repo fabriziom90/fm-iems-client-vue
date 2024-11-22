@@ -36,6 +36,7 @@ import axios from "axios";
 
 import Table from "../../components/Table.vue";
 import Loader from "../../components/Loader.vue";
+import { store } from "../../../store.js";
 
 import { ref, onMounted } from "vue";
 
@@ -58,20 +59,28 @@ let data = ref([]);
 let loaded = ref(false);
 
 onMounted(async () => {
-  await axios.get("http://localhost:4000/incomes/").then((resp) => {
-    data.value = resp.data.incomes;
+  await axios
+    .get("http://localhost:4000/incomes/", {
+      params: { id: store.user.userId },
+    })
+    .then((resp) => {
+      data.value = resp.data.incomes;
 
-    setTimeout(() => {
-      loaded.value = true;
-    }, 1800);
-  });
+      setTimeout(() => {
+        loaded.value = true;
+      }, 1800);
+    });
 });
 
 const reloadTable = async () => {
   // loaded.value = false
-  await axios.get("http://localhost:4000/incomes/").then((resp) => {
-    data.value = resp.data.incomes;
-  });
+  await axios
+    .get("http://localhost:4000/incomes/", {
+      params: { id: store.user.userId },
+    })
+    .then((resp) => {
+      data.value = resp.data.incomes;
+    });
 };
 </script>
 <style lang=""></style>

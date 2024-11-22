@@ -1,72 +1,81 @@
 <template lang="">
-    <div class="content mt-3 mx-4">
-        <div class="container-full">
-            <div class="row gy-3">
-                <div class="col-12">
-                <router-link
-                    to="/admin/add-year"
-                    class="rounded-0 btn btn-sm btn-main"
-                >
-                    Aggiungi anno
-                </router-link>
-                <router-link
-                    to="/admin/exits/add-exit"
-                    class="rounded-0 btn btn-sm btn-danger ms-2"
-                >
-                    Aggiungi uscita
-                </router-link>
-                </div>
-                <div class="col-12">
-                <h2>Riepilogo</h2>
-                    <Loader v-if="!loaded" />
-                    <Table :data="data" :months="months" :type="2" @handleReloadTable="reloadTable" v-else/>
-                </div>
-            </div>
+  <div class="content mt-3 mx-4">
+    <div class="container-full">
+      <div class="row gy-3">
+        <div class="col-12">
+          <router-link
+            to="/admin/add-year"
+            class="rounded-0 btn btn-sm btn-main"
+          >
+            Aggiungi anno
+          </router-link>
+          <router-link
+            to="/admin/exits/add-exit"
+            class="rounded-0 btn btn-sm btn-danger ms-2"
+          >
+            Aggiungi uscita
+          </router-link>
         </div>
+        <div class="col-12">
+          <h2>Riepilogo</h2>
+          <Loader v-if="!loaded" />
+          <Table
+            :data="data"
+            :months="months"
+            :type="2"
+            @handleReloadTable="reloadTable"
+            v-else
+          />
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 <script setup>
-    import axios from 'axios';
+import axios from "axios";
 
-    import Table from '../../components/Table.vue';
-    import Loader from '../../components/Loader.vue';
+import Table from "../../components/Table.vue";
+import Loader from "../../components/Loader.vue";
 
-    import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch } from "vue";
+import { store } from "../../../store.js";
 
-    const months = [
-        "Gen",
-        "Feb",
-        "Mar",
-        "Apr",
-        "Mag",
-        "Giu",
-        "Lug",
-        "Ago",
-        "Set",
-        "Ott",
-        "Nov",
-        "Dic",
-    ];
+const months = [
+  "Gen",
+  "Feb",
+  "Mar",
+  "Apr",
+  "Mag",
+  "Giu",
+  "Lug",
+  "Ago",
+  "Set",
+  "Ott",
+  "Nov",
+  "Dic",
+];
 
-    let data = ref([]);
-    let loaded = ref(false);
+let data = ref([]);
+let loaded = ref(false);
 
-    onMounted(async () => {
-        await axios.get("http://localhost:4000/exits/").then((resp) => {
-            data.value = resp.data.exits
-            setTimeout(() => {
-                loaded.value = true
-            }, 1800);
-        });
+onMounted(async () => {
+  await axios
+    .get("http://localhost:4000/exits/", { params: { id: store.user.userId } })
+    .then((resp) => {
+      data.value = resp.data.exits;
+      setTimeout(() => {
+        loaded.value = true;
+      }, 1800);
     });
+});
 
-    const reloadTable = async () =>{
-        // loaded.value = false
-        await axios.get("http://localhost:4000/exits/").then((resp) => {
-            data.value = resp.data.exits    
-        });
-    }
+const reloadTable = async () => {
+  // loaded.value = false
+  await axios
+    .get("http://localhost:4000/exits/", { params: { id: store.user.userId } })
+    .then((resp) => {
+      data.value = resp.data.exits;
+    });
+};
 </script>
-<style lang="">
-    
-</style>
+<style lang=""></style>

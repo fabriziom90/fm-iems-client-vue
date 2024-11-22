@@ -29,18 +29,34 @@
 </template>
 <script setup>
 import { ref } from "vue";
-import { router } from "../../router.js";
+import { useRouter } from "vue-router";
+import { useToast } from "vue-toast-notification";
 import { store } from "../../store.js";
+import axios from "axios";
 
 defineProps({
   user: Object,
 });
 
 const showDropdown = ref(false);
+const router = useRouter();
+const $toast = useToast();
 
 const logout = () => {
-  localStorage.removeItem("token");
-  router.push({ name: "login" });
+  axios.get("http://localhost:4000/users/logout").then((resp) => {
+    const { result, message } = resp.data;
+    localStorage.removeItem("token");
+    showDropdown.value = false;
+
+    $toast.success(message, {
+      position: "top-right",
+      duration: 3000,
+    });
+
+    setTimeout(() => {
+      router.push({ name: "login" });
+    }, 3000);
+  });
 };
 </script>
 <style lang="scss" scoped>
