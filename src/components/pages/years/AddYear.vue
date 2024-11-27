@@ -4,6 +4,7 @@ import { useToast } from "vue-toast-notification";
 import { useRouter } from "vue-router";
 
 import { ref, onMounted } from "vue";
+import { store } from "../../../store.js";
 
 const $toast = useToast();
 const router = useRouter();
@@ -17,9 +18,10 @@ onMounted(() => {
 });
 
 function saveYear() {
-  let year = yearSelect.value;
+  const year = yearSelect.value;
+  const id = store.user.userId;
 
-  axios.post("http://localhost:4000/years/store", { year }).then((res) => {
+  axios.post("http://localhost:4000/years/store", { year, id }).then((res) => {
     const { result, message } = res.data;
 
     if (result === true) {

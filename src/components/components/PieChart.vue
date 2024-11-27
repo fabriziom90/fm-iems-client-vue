@@ -35,6 +35,7 @@ watch(
   }
 );
 
+// This function draw graph
 const setGraph = (prec) => {
   const reversedMonths = [...props.months].reverse();
   monthsName.value = reversedMonths.map((item) => {
