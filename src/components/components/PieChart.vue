@@ -23,15 +23,24 @@ let series = ref([
 ]);
 
 const monthsName = ref([]);
-const visibleTaxes = ref(true);
 
 onMounted(() => {
+  setGraph(props.visible);
+});
+
+watch(
+  () => props.visible,
+  (prec) => {
+    setGraph(prec);
+  }
+);
+
+const setGraph = (prec) => {
   const reversedMonths = [...props.months].reverse();
   monthsName.value = reversedMonths.map((item) => {
     return item.month.substring(0, 3);
   });
 
-  visibleTaxes.value = props.visible;
   options.value = {
     chart: {
       id: "pie-chart",
@@ -39,35 +48,12 @@ onMounted(() => {
         enabled: false,
       },
     },
-    colors: setColors(visibleTaxes.value),
-    labels: setLabels(visibleTaxes.value),
+    colors: setColors(prec),
+    labels: setLabels(prec),
   };
 
-  series.value = setValues(reversedMonths, visibleTaxes.value);
-});
-
-watch(
-  () => props.visible,
-  (prec) => {
-    const reversedMonths = [...props.months].reverse();
-    monthsName.value = reversedMonths.map((item) => {
-      return item.month.substring(0, 3);
-    });
-
-    options.value = {
-      chart: {
-        id: "pie-chart",
-        zoom: {
-          enabled: false,
-        },
-      },
-      colors: setColors(prec),
-      labels: setLabels(prec),
-    };
-
-    series.value = setValues(reversedMonths, prec);
-  }
-);
+  series.value = setValues(reversedMonths, prec);
+};
 
 // Function for the graph's labels
 const setLabels = (visible) => {
