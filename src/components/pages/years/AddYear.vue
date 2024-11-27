@@ -1,3 +1,45 @@
+<script setup>
+import axios from "axios";
+import { useToast } from "vue-toast-notification";
+import { useRouter } from "vue-router";
+
+import { ref, onMounted } from "vue";
+
+const $toast = useToast();
+const router = useRouter();
+
+const years = ref([]);
+let yearSelect = ref("");
+
+onMounted(() => {
+  let currentYear = new Date().getFullYear();
+  years.value = Array.from(new Array(35), (val, index) => currentYear - index);
+});
+
+function saveYear() {
+  let year = yearSelect.value;
+
+  axios.post("http://localhost:4000/years/store", { year }).then((res) => {
+    const { result, message } = res.data;
+
+    if (result === true) {
+      $toast.success(message, {
+        position: "top-right",
+        duration: 3000,
+      });
+
+      setTimeout(function () {
+        router.push({ name: "dashboard" });
+      }, 3100);
+    } else {
+      $toast.error(message, {
+        position: "top-right",
+        duration: 3000,
+      });
+    }
+  });
+}
+</script>
 <template lang="">
   <div class="container-fluid">
     <div class="row">
@@ -41,46 +83,4 @@
     </div>
   </div>
 </template>
-<script setup>
-import axios from "axios";
-import { useToast } from "vue-toast-notification";
-import { useRouter } from "vue-router";
-
-import { ref, onMounted } from "vue";
-
-const $toast = useToast();
-const router = useRouter();
-
-const years = ref([]);
-let yearSelect = ref("");
-
-onMounted(() => {
-  let currentYear = new Date().getFullYear();
-  years.value = Array.from(new Array(35), (val, index) => currentYear - index);
-});
-
-function saveYear() {
-  let year = yearSelect.value;
-
-  axios.post("http://localhost:4000/years/store", { year }).then((res) => {
-    const { result, message } = res.data;
-
-    if (result === true) {
-      $toast.success(message, {
-        position: "top-right",
-        duration: 3000,
-      });
-
-      setTimeout(function () {
-        router.push({ name: "dashboard" });
-      }, 3100);
-    } else {
-      $toast.error(message, {
-        position: "top-right",
-        duration: 3000,
-      });
-    }
-  });
-}
-</script>
 <style lang=""></style>

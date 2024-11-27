@@ -1,16 +1,3 @@
-<template lang="">
-  <div class="content mt-3 mx-4">
-    <div class="container-full">
-      <div class="row gy-3">
-        <div class="col-12">
-          <h2>Riepilogo tasse</h2>
-          <Loader v-if="!loaded" />
-          <Table :data="data" :months="months" :type="3" v-else />
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
 <script setup>
 import axios from "axios";
 
@@ -51,4 +38,17 @@ onMounted(async () => {
     });
 });
 </script>
+<template lang="">
+  <div class="content mt-3 mx-4">
+    <div class="container-full">
+      <div class="row gy-3">
+        <div class="col-12">
+          <h2>Importi al netto delle tasse</h2>
+          <Loader v-if="!loaded" />
+          <Table :data="data" :months="months" :type="3" v-else />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 <style lang=""></style>

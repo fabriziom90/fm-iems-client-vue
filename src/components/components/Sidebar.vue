@@ -1,3 +1,4 @@
+<script setup></script>
 <template lang="">
   <div id="sidebar">
     <div class="top-sidebar px-2">
@@ -61,7 +62,5 @@
     </div>
   </div>
 </template>
-<script>
-export default {};
-</script>
+
 <style lang=""></style>

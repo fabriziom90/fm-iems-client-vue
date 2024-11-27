@@ -1,3 +1,55 @@
+<script setup>
+import { ref, computed } from "vue";
+
+defineProps({
+  months: Array,
+  taxesVisible: Boolean,
+});
+
+let visible = ref(true);
+let fullIncomes = ref(0);
+let fullExits = ref(0);
+let fullTaxes = ref(0);
+
+const showValues = (incomes, month, type) => {};
+
+const sumValues = (array, type) => {
+  return array
+    .reduce(
+      (partialSum, a) =>
+        type === "taxes" ? partialSum + a.value * 0.3 : partialSum + a.value,
+      0
+    )
+    .toFixed(2);
+};
+
+const rowIncomes = (incomes) => {
+  return incomes.reduce((partialSum, a) => partialSum + a.value, 0).toFixed(2);
+};
+
+const rowExits = (exits) => {
+  return exits.reduce((partialSum, a) => partialSum + a.value, 0).toFixed(2);
+};
+
+const rowTaxes = (incomes) => {
+  return incomes
+    .reduce((partialSum, a) => partialSum + a.value * 0.3, 0)
+    .toFixed(2);
+};
+
+const colValues = (months, type) => {
+  let total = 0;
+  months.forEach((month) => {
+    if (type === "incomes" || type === "taxes") {
+      total += parseFloat(sumValues(month.incomes, type));
+    } else {
+      total += parseFloat(sumValues(month.exits, type));
+    }
+  });
+
+  return total.toFixed(2);
+};
+</script>
 <template lang="">
   <div class="col-12">
     <table class="table table-striped" id="detail">
@@ -144,56 +196,5 @@
     </table>
   </div>
 </template>
-<script setup>
-import { ref, computed } from "vue";
 
-defineProps({
-  months: Array,
-  taxesVisible: Boolean,
-});
-
-let visible = ref(true);
-let fullIncomes = ref(0);
-let fullExits = ref(0);
-let fullTaxes = ref(0);
-
-const showValues = (incomes, month, type) => {};
-
-const sumValues = (array, type) => {
-  return array
-    .reduce(
-      (partialSum, a) =>
-        type === "taxes" ? partialSum + a.value * 0.3 : partialSum + a.value,
-      0
-    )
-    .toFixed(2);
-};
-
-const rowIncomes = (incomes) => {
-  return incomes.reduce((partialSum, a) => partialSum + a.value, 0).toFixed(2);
-};
-
-const rowExits = (exits) => {
-  return exits.reduce((partialSum, a) => partialSum + a.value, 0).toFixed(2);
-};
-
-const rowTaxes = (incomes) => {
-  return incomes
-    .reduce((partialSum, a) => partialSum + a.value * 0.3, 0)
-    .toFixed(2);
-};
-
-const colValues = (months, type) => {
-  let total = 0;
-  months.forEach((month) => {
-    if (type === "incomes" || type === "taxes") {
-      total += parseFloat(sumValues(month.incomes, type));
-    } else {
-      total += parseFloat(sumValues(month.exits, type));
-    }
-  });
-
-  return total.toFixed(2);
-};
-</script>
 <style lang=""></style>

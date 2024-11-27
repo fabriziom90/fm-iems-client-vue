@@ -1,3 +1,38 @@
+<script setup>
+import axios from "axios";
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import Loader from "../../components/Loader.vue";
+import SummaryTable from "../../components/SummaryTable.vue";
+import LineChart from "../../components/LineChart.vue";
+import PieChart from "../../components/PieChart.vue";
+import { store } from "../../../store.js";
+
+let visible = ref(true);
+let loaded = ref(false);
+let year = ref("");
+let yearMonths = ref([]);
+
+const route = useRoute();
+
+onMounted(() => {
+  getYear();
+});
+
+const getYear = () => {
+  axios
+    .get("http://localhost:4000/years/summary", {
+      params: { data: route.params.year, id: store.user.userId },
+    })
+    .then((res) => {
+      year.value = res.data.values[0].year;
+      yearMonths = res.data.values[0].months;
+      setTimeout(() => {
+        loaded.value = true;
+      }, 1500);
+    });
+};
+</script>
 <template lang="">
   <div class="container-fluid">
     <div class="row mt-3">
@@ -20,48 +55,26 @@
           <span v-else> Tasse nascoste <i class="fas fa-eye-slash"></i> </span>
         </button>
       </div>
-
-      <Loader v-if="!loaded" />
-
-      <SummaryTable
-        :months="yearMonths"
-        :taxesVisible="visible"
-        :type="0"
-        v-else
-      />
+      <div class="row" v-if="!loaded">
+        <div class="col-12">
+          <Loader />
+        </div>
+      </div>
+      <div class="row" v-else>
+        <div class="col-6">
+          <LineChart :months="yearMonths" :type="3" />
+          <PieChart :months="yearMonths" :visible="visible" />
+        </div>
+        <div class="col-6">
+          <SummaryTable
+            :months="yearMonths"
+            :taxesVisible="visible"
+            :type="0"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
-<script setup>
-import axios from "axios";
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import Loader from "../../components/Loader.vue";
-import SummaryTable from "../../components/SummaryTable.vue";
 
-let visible = ref(true);
-let loaded = ref(false);
-let year = ref("");
-let yearMonths = ref([]);
-
-const route = useRoute();
-
-onMounted(() => {
-  getYear();
-});
-
-const getYear = () => {
-  axios
-    .get("http://localhost:4000/years/summary", {
-      params: { data: route.params.year },
-    })
-    .then((res) => {
-      year.value = res.data.values[0].year;
-      yearMonths = res.data.values[0].months;
-      setTimeout(() => {
-        loaded.value = true;
-      }, 1500);
-    });
-};
-</script>
 <style lang=""></style>

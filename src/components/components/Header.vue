@@ -1,32 +1,3 @@
-<template lang="">
-  <header>
-    <div className="container-fluid">
-      <div className="row">
-        <div className="col-12">
-          <div className="content-header">
-            <div className="float-end my-2">
-              <div class="dropdown">
-                <button
-                  className="btn btn-sm btn-transparent btn-circle border-white text-white"
-                  id="dropdown-user"
-                  @click="showDropdown = !showDropdown"
-                >
-                  <i class="fas fa-user"></i>
-                </button>
-                <div class="dropdown-container" v-if="showDropdown">
-                  <ul class="list-unstyled">
-                    <li>Ciao {{ store.user.user_name }}</li>
-                    <li role="button" @click="logout">Logout</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-</template>
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
@@ -59,6 +30,36 @@ const logout = () => {
   });
 };
 </script>
+<template lang="">
+  <header>
+    <div className="container-fluid">
+      <div className="row">
+        <div className="col-12">
+          <div className="content-header">
+            <div className="float-end my-2">
+              <div class="dropdown">
+                <button
+                  className="btn btn-sm btn-transparent btn-circle border-white text-white"
+                  id="dropdown-user"
+                  @click="showDropdown = !showDropdown"
+                >
+                  <i class="fas fa-user"></i>
+                </button>
+                <div class="dropdown-container" v-if="showDropdown">
+                  <ul class="list-unstyled">
+                    <li>Ciao {{ store.user.user_name }}</li>
+                    <li role="button" @click="logout">Logout</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+</template>
+
 <style lang="scss" scoped>
 .dropdown-container {
   position: fixed;

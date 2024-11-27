@@ -1,3 +1,59 @@
+<script setup>
+import axios from "axios";
+import bcrypt from "bcryptjs";
+import { useRouter } from "vue-router";
+
+import { useToast } from "vue-toast-notification";
+
+import { ref } from "vue";
+
+let name = ref("");
+let email = ref("");
+let password = ref("");
+let confirmPassword = ref("");
+
+axios.defaults.withCredentials = true;
+
+const $toast = useToast();
+const salt = bcrypt.genSaltSync(10);
+const router = useRouter();
+
+const register = () => {
+  const hashedPassword = bcrypt.hashSync(password.value, salt);
+  const hashedConfirmPassword = bcrypt.hashSync(confirmPassword.value, salt);
+
+  const data = {
+    name: name.value,
+    email: email.value,
+    password: hashedPassword,
+    confirmPassword: hashedConfirmPassword,
+  };
+
+  axios
+    .post("http://localhost:4000/users/register", data)
+    .then((resp, data) => {
+      const { result, message, auth, token } = resp.data;
+
+      if (result === true && auth === true) {
+        localStorage.setItem("token", token);
+
+        $toast.success(message, {
+          position: "top-right",
+          autoClose: 3000,
+        });
+
+        setTimeout(() => {
+          router.push({ name: "dashboard" });
+        }, 3100);
+      } else {
+        $toast.error(message, {
+          position: "top-right",
+          autoClose: 3000,
+        });
+      }
+    });
+};
+</script>
 <template lang="">
   <div class="background-main vh-100 vw-100">
     <div class="d-flex justify-content-center align-items-center h-100">
@@ -65,60 +121,4 @@
     </div>
   </div>
 </template>
-<script setup>
-import axios from "axios";
-import bcrypt from "bcryptjs";
-import { useRouter } from "vue-router";
-
-import { useToast } from "vue-toast-notification";
-
-import { ref } from "vue";
-
-let name = ref("");
-let email = ref("");
-let password = ref("");
-let confirmPassword = ref("");
-
-axios.defaults.withCredentials = true;
-
-const $toast = useToast();
-const salt = bcrypt.genSaltSync(10);
-const router = useRouter();
-
-const register = () => {
-  const hashedPassword = bcrypt.hashSync(password.value, salt);
-  const hashedConfirmPassword = bcrypt.hashSync(confirmPassword.value, salt);
-
-  const data = {
-    name: name.value,
-    email: email.value,
-    password: hashedPassword,
-    confirmPassword: hashedConfirmPassword,
-  };
-
-  axios
-    .post("http://localhost:4000/users/register", data)
-    .then((resp, data) => {
-      const { result, message, auth, token } = resp.data;
-
-      if (result === true && auth === true) {
-        localStorage.setItem("token", token);
-
-        $toast.success(message, {
-          position: "top-right",
-          autoClose: 3000,
-        });
-
-        setTimeout(() => {
-          router.push({ name: "dashboard" });
-        }, 3100);
-      } else {
-        $toast.error(message, {
-          position: "top-right",
-          autoClose: 3000,
-        });
-      }
-    });
-};
-</script>
 <style lang=""></style>

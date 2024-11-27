@@ -1,133 +1,11 @@
-<template lang="">
-  <div class="container-fluid">
-    <div class="row mt-3">
-      <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center my-3">
-          <h2>Dettaglio entrate anno {{ incomes.year }}</h2>
-          <div>
-            <router-link
-              :to="{ name: 'index-incomes' }"
-              class="btn btn-sm btn-main border-0"
-            >
-              Entrate
-            </router-link>
-            <router-link
-              :to="{ name: 'add-income' }"
-              class="rounded-0 btn btn-sm btn-success ms-2"
-            >
-              Aggiungi entrata
-            </router-link>
-          </div>
-        </div>
-      </div>
-      <div class="col-12">
-        <table class="table table-striped" id="detail">
-          <tbody>
-            <tr
-              :key="`detail-income-${index}`"
-              v-for="(month, index) in incomes.months"
-            >
-              <td class="p-0">
-                <div class="head-cell">Mese</div>
-                <div class="p-2">{{ month.month }}</div>
-              </td>
-              <td class="p-0">
-                <div class="head-cell height-30px"></div>
-                <div
-                  class="p-2"
-                  v-for="income in month.incomes"
-                  :key="`income-${income}`"
-                >
-                  <div
-                    class="d-flex justify-content-between align-items-center"
-                  >
-                    <div>
-                      <div
-                        class="d-flex"
-                        v-if="
-                          showEdit && thisIncome.income_id === income.income_id
-                        "
-                      >
-                        <input
-                          type="text"
-                          class="form-control form-control-sm me-1"
-                          v-model="incomeValue"
-                          placeholder="Importo"
-                        />
-                        <input
-                          type="text"
-                          class="form-control form-control-sm"
-                          v-model="incomeCustomer"
-                          placeholder="Cliente"
-                        />
-                      </div>
-
-                      <span v-else>
-                        <strong>{{ income.customer }} </strong>
-                        - {{ income.value.toFixed(2) }}€
-                      </span>
-                    </div>
-                    <div>
-                      <button
-                        class="btn btn-sm btn-warning me-1"
-                        @click="
-                          {
-                            setIncome(income);
-                          }
-                        "
-                      >
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button
-                        class="btn btn-sm btn-square btn-danger me-2"
-                        @click="
-                          () => {
-                            isModalVisible = true;
-                            incomeDelete = income.income_id;
-                          }
-                        "
-                      >
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="head-cell mt-2 border-bottom border-dark">
-                  {{
-                    month.incomes
-                      .reduce((prev, curr) => {
-                        return (prev = prev + curr.value);
-                      }, 0)
-                      .toFixed(2)
-                  }}€
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td class="p-0 head-cell">Totale</td>
-              <td class="p-0 full-total text-white bg-success">
-                <div>{{ total }}€</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <ConfirmationModal
-          v-if="isModalVisible"
-          @close="closeModal"
-          @handleConfirmDelete="confirmDelete"
-          :title="'Sei sicuro di voler cancellare questa entrata?'"
-          :description="'Una volta cancellata questa entrata, non potrà più essere recuperata. Vuoi procedere?'"
-        />
-      </div>
-    </div>
-  </div>
-</template>
 <script setup>
 import axios from "axios";
 import { useRoute } from "vue-router";
 import { ref, onMounted, watch } from "vue";
 import { useToast } from "vue-toast-notification";
 import ConfirmationModal from "../../components/ConfirmationModal.vue";
+import LineChart from "../../components/LineChart.vue";
+import Loader from "../../components/Loader.vue";
 
 import { store } from "../../../store.js";
 
@@ -139,6 +17,7 @@ let isModalVisible = ref(false);
 let incomeValue = ref(null);
 let incomeCustomer = ref("");
 let incomeDelete = ref(null);
+let loaded = ref(false);
 
 const route = useRoute();
 const $toast = useToast();
@@ -146,11 +25,14 @@ const $toast = useToast();
 const getYearIncomes = () => {
   axios
     .get("http://localhost:4000/incomes/get_distinct_incomes", {
-      params: { year: route.params.year },
+      params: { year: route.params.year, id: store.user.userId },
     })
     .then((resp) => {
       incomes.value = resp.data.incomes[0];
       totalIncomes(incomes.value);
+      setTimeout(() => {
+        loaded.value = true;
+      }, 1500);
     });
 };
 
@@ -251,4 +133,140 @@ watch(thisIncome, (newValue) => {
   }
 });
 </script>
+<template lang="">
+  <div class="container-fluid">
+    <div class="row mt-3">
+      <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center my-3">
+          <h2>Dettaglio entrate anno {{ incomes.year }}</h2>
+          <div>
+            <router-link
+              :to="{ name: 'index-incomes' }"
+              class="btn btn-sm btn-main border-0"
+            >
+              Entrate
+            </router-link>
+            <router-link
+              :to="{ name: 'add-income' }"
+              class="rounded-0 btn btn-sm btn-success ms-2"
+            >
+              Aggiungi entrata
+            </router-link>
+          </div>
+        </div>
+      </div>
+      <div class="row" v-if="!loaded">
+        <div class="col-12">
+          <Loader />
+        </div>
+      </div>
+      <div class="row" v-else>
+        <div class="col-6">
+          <LineChart :months="incomes.months" :type="1" />
+        </div>
+        <div class="col-6">
+          <table class="table table-striped" id="detail">
+            <tbody>
+              <tr
+                :key="`detail-income-${index}`"
+                v-for="(month, index) in incomes.months"
+              >
+                <td class="p-0">
+                  <div class="head-cell">Mese</div>
+                  <div class="p-2">{{ month.month }}</div>
+                </td>
+                <td class="p-0">
+                  <div class="head-cell height-30px"></div>
+                  <div
+                    class="p-2"
+                    v-for="income in month.incomes"
+                    :key="`income-${income}`"
+                  >
+                    <div
+                      class="d-flex justify-content-between align-items-center"
+                    >
+                      <div>
+                        <div
+                          class="d-flex"
+                          v-if="
+                            showEdit &&
+                            thisIncome.income_id === income.income_id
+                          "
+                        >
+                          <input
+                            type="text"
+                            class="form-control form-control-sm me-1"
+                            v-model="incomeValue"
+                            placeholder="Importo"
+                          />
+                          <input
+                            type="text"
+                            class="form-control form-control-sm"
+                            v-model="incomeCustomer"
+                            placeholder="Cliente"
+                          />
+                        </div>
+
+                        <span v-else>
+                          <strong>{{ income.customer }} </strong>
+                          - {{ income.value.toFixed(2) }}€
+                        </span>
+                      </div>
+                      <div>
+                        <button
+                          class="btn btn-sm btn-warning me-1"
+                          @click="
+                            {
+                              setIncome(income);
+                            }
+                          "
+                        >
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button
+                          class="btn btn-sm btn-square btn-danger me-2"
+                          @click="
+                            () => {
+                              isModalVisible = true;
+                              incomeDelete = income.income_id;
+                            }
+                          "
+                        >
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="head-cell mt-2 border-bottom border-dark">
+                    {{
+                      month.incomes
+                        .reduce((prev, curr) => {
+                          return (prev = prev + curr.value);
+                        }, 0)
+                        .toFixed(2)
+                    }}€
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td class="p-0 head-cell">Totale</td>
+                <td class="p-0 full-total text-white bg-success">
+                  <div>{{ total }}€</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <ConfirmationModal
+            v-if="isModalVisible"
+            @close="closeModal"
+            @handleConfirmDelete="confirmDelete"
+            :title="'Sei sicuro di voler cancellare questa entrata?'"
+            :description="'Una volta cancellata questa entrata, non potrà più essere recuperata. Vuoi procedere?'"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style lang=""></style>

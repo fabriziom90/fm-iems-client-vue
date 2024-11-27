@@ -1,3 +1,49 @@
+<script setup>
+import axios from "axios";
+import { useRoute } from "vue-router";
+import { ref, onMounted } from "vue";
+import { useToast } from "vue-toast-notification";
+
+import { store } from "../../../store.js";
+
+const incomes = ref([]);
+let totIncomes = ref(0);
+let totTaxes = ref(0);
+let totNet = ref(0);
+
+const route = useRoute();
+
+const getYearTaxes = () => {
+  axios
+    .get("http://localhost:4000/taxes/detail", {
+      params: { data: route.params.year, id: store.user.userId },
+    })
+    .then((resp) => {
+      incomes.value = resp.data.net_amounts[0];
+      sumTotals(incomes.value);
+    });
+};
+
+const sumTotals = (incomes) => {
+  incomes.months.forEach((month) => {
+    totIncomes.value += month.incomes.reduce((prev, curr) => {
+      return (prev = prev + curr.income);
+    }, 0);
+
+    totTaxes.value += month.incomes.reduce((prev, curr) => {
+      return (prev = prev + curr.taxes);
+    }, 0);
+
+    totNet.value += month.incomes.reduce((prev, curr) => {
+      return (prev = prev + curr.net);
+    }, 0);
+  });
+};
+
+onMounted(() => {
+  getYearTaxes();
+});
+</script>
 <template lang="">
   <div class="container-fluid">
     <div class="row mt-3">
@@ -101,50 +147,4 @@
     </div>
   </div>
 </template>
-<script setup>
-import axios from "axios";
-import { useRoute } from "vue-router";
-import { ref, onMounted } from "vue";
-import { useToast } from "vue-toast-notification";
-
-import { store } from "../../../store.js";
-
-const incomes = ref([]);
-let totIncomes = ref(0);
-let totTaxes = ref(0);
-let totNet = ref(0);
-
-const route = useRoute();
-
-const getYearTaxes = () => {
-  axios
-    .get("http://localhost:4000/taxes/detail", {
-      params: { data: route.params.year },
-    })
-    .then((resp) => {
-      incomes.value = resp.data.net_amounts[0];
-      sumTotals(incomes.value);
-    });
-};
-
-const sumTotals = (incomes) => {
-  incomes.months.forEach((month) => {
-    totIncomes.value += month.incomes.reduce((prev, curr) => {
-      return (prev = prev + curr.income);
-    }, 0);
-
-    totTaxes.value += month.incomes.reduce((prev, curr) => {
-      return (prev = prev + curr.taxes);
-    }, 0);
-
-    totNet.value += month.incomes.reduce((prev, curr) => {
-      return (prev = prev + curr.net);
-    }, 0);
-  });
-};
-
-onMounted(() => {
-  getYearTaxes();
-});
-</script>
 <style lang=""></style>

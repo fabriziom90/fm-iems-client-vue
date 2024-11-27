@@ -1,36 +1,3 @@
-<template lang="">
-  <div class="content mt-3 mx-4">
-    <div class="container-full">
-      <div class="row gy-3">
-        <div class="col-12">
-          <router-link
-            to="/admin/add-year"
-            class="rounded-0 btn btn-sm btn-main"
-          >
-            Aggiungi anno
-          </router-link>
-          <router-link
-            to="/admin/exits/add-exit"
-            class="rounded-0 btn btn-sm btn-danger ms-2"
-          >
-            Aggiungi uscita
-          </router-link>
-        </div>
-        <div class="col-12">
-          <h2>Riepilogo</h2>
-          <Loader v-if="!loaded" />
-          <Table
-            :data="data"
-            :months="months"
-            :type="2"
-            @handleReloadTable="reloadTable"
-            v-else
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
 <script setup>
 import axios from "axios";
 
@@ -78,4 +45,37 @@ const reloadTable = async () => {
     });
 };
 </script>
+<template lang="">
+  <div class="content mt-3 mx-4">
+    <div class="container-full">
+      <div class="row gy-3">
+        <div class="col-12">
+          <router-link
+            :to="{ name: 'add-year' }"
+            class="rounded-0 btn btn-sm btn-main"
+          >
+            Aggiungi anno
+          </router-link>
+          <router-link
+            :to="{ name: 'add-exit' }"
+            class="rounded-0 btn btn-sm btn-danger ms-2"
+          >
+            Aggiungi uscita
+          </router-link>
+        </div>
+        <div class="col-12">
+          <h2>Riepilogo</h2>
+          <Loader v-if="!loaded" />
+          <Table
+            :data="data"
+            :months="months"
+            :type="2"
+            @handleReloadTable="reloadTable"
+            v-else
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 <style lang=""></style>

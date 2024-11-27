@@ -1,3 +1,4 @@
+<script setup></script>
 <template lang="">
   <div
     class="text-center d-flex justify-content-center align-items-center mt-5"
@@ -18,5 +19,4 @@
     </div>
   </div>
 </template>
-<script setup></script>
 <style lang=""></style>

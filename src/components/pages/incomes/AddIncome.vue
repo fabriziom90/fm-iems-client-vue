@@ -1,22 +1,3 @@
-<template lang="">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12 mt-3">
-        <h2>Aggiungi Entrata</h2>
-      </div>
-      <div class="col-12">
-        <form class="background-main p-4">
-          <Form
-            :years="years"
-            :months="months"
-            v-model="formData"
-            @handleFormData="submitForm"
-          />
-        </form>
-      </div>
-    </div>
-  </div>
-</template>
 <script setup>
 import axios from "axios";
 import { store } from "../../../store.js";
@@ -66,4 +47,23 @@ const submitForm = (data) => {
   });
 };
 </script>
+<template lang="">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-12 mt-3">
+        <h2>Aggiungi Entrata</h2>
+      </div>
+      <div class="col-12">
+        <form class="background-main p-4">
+          <Form
+            :years="years"
+            :months="months"
+            v-model="formData"
+            @handleFormData="submitForm"
+          />
+        </form>
+      </div>
+    </div>
+  </div>
+</template>
 <style lang=""></style>
