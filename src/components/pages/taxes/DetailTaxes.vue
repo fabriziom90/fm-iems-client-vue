@@ -60,7 +60,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
-      <div class="col-12">
+      <div class="col-12" v-if="incomes.months.length > 0">
         <table class="table table-striped" id="detail">
           <tbody>
             <tr
@@ -143,6 +143,11 @@ onMounted(() => {
             </tr>
           </tbody>
         </table>
+      </div>
+      <div v-else>
+        <h2 class="text-center">
+          Non sono state inserite entrate per l'anno selezionato
+        </h2>
       </div>
     </div>
   </div>

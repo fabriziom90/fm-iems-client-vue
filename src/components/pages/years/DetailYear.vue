@@ -27,6 +27,7 @@ const getYear = () => {
     .then((res) => {
       year.value = res.data.values[0].year;
       yearMonths = res.data.values[0].months;
+
       setTimeout(() => {
         loaded.value = true;
       }, 1500);
@@ -61,16 +62,25 @@ const getYear = () => {
         </div>
       </div>
       <div class="row" v-else>
-        <div class="col-6">
-          <LineChart :months="yearMonths" :type="3" />
-          <PieChart :months="yearMonths" :visible="visible" />
-        </div>
-        <div class="col-6">
-          <SummaryTable
-            :months="yearMonths"
-            :taxesVisible="visible"
-            :type="0"
-          />
+        <div class="col-12">
+          <div class="row" v-if="yearMonths.length > 0">
+            <div class="col-6">
+              <LineChart :months="yearMonths" :type="3" />
+              <PieChart :months="yearMonths" :visible="visible" />
+            </div>
+            <div class="col-6">
+              <SummaryTable
+                :months="yearMonths"
+                :taxesVisible="visible"
+                :type="0"
+              />
+            </div>
+          </div>
+          <div v-else>
+            <h2 class="text-center">
+              Non sono state inserite entrate e/o uscite per l'anno selezionato
+            </h2>
+          </div>
         </div>
       </div>
     </div>

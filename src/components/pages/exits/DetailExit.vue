@@ -159,103 +159,116 @@ watch(thisExit, (newValue) => {
         <div class="col-12"><Loader /></div>
       </div>
       <div class="row" v-else>
-        <div class="col-6"><LineChart :months="exits.months" :type="2" /></div>
-        <div class="col-6">
-          <table class="table table-striped" id="detail">
-            <tbody>
-              <tr
-                :key="`detail-exit-${index}`"
-                v-for="(month, index) in exits.months"
-              >
-                <td class="p-0">
-                  <div class="head-cell">Mese</div>
-                  <div class="p-2">{{ month.month }}</div>
-                </td>
-                <td class="p-0">
-                  <div class="head-cell height-30px"></div>
-                  <div
-                    class="p-2"
-                    v-for="exit in month.exits"
-                    :key="`exit-${exit}`"
+        <div class="col-12" v-if="exits.months.length > 0">
+          <div class="row">
+            <div class="col-6">
+              <LineChart :months="exits.months" :type="2" />
+            </div>
+            <div class="col-6">
+              <table class="table table-striped" id="detail">
+                <tbody>
+                  <tr
+                    :key="`detail-exit-${index}`"
+                    v-for="(month, index) in exits.months"
                   >
-                    <div
-                      class="d-flex justify-content-between align-items-center"
-                    >
-                      <div>
+                    <td class="p-0">
+                      <div class="head-cell">Mese</div>
+                      <div class="p-2">{{ month.month }}</div>
+                    </td>
+                    <td class="p-0">
+                      <div class="head-cell height-30px"></div>
+                      <div
+                        class="p-2"
+                        v-for="exit in month.exits"
+                        :key="`exit-${exit}`"
+                      >
                         <div
-                          class="d-flex"
-                          v-if="showEdit && thisExit.exit_id === exit.exit_id"
+                          class="d-flex justify-content-between align-items-center"
                         >
-                          <input
-                            type="text"
-                            class="form-control form-control-sm me-1"
-                            v-model="exitValue"
-                            placeholder="Importo"
-                          />
-                          <input
-                            type="text"
-                            class="form-control form-control-sm"
-                            v-model="exitCustomer"
-                            placeholder="Cliente"
-                          />
-                        </div>
+                          <div>
+                            <div
+                              class="d-flex"
+                              v-if="
+                                showEdit && thisExit.exit_id === exit.exit_id
+                              "
+                            >
+                              <input
+                                type="text"
+                                class="form-control form-control-sm me-1"
+                                v-model="exitValue"
+                                placeholder="Importo"
+                              />
+                              <input
+                                type="text"
+                                class="form-control form-control-sm"
+                                v-model="exitCustomer"
+                                placeholder="Cliente"
+                              />
+                            </div>
 
-                        <span v-else>
-                          <strong>{{ exit.customer }} </strong>
-                          - {{ exit.value.toFixed(2) }}€
-                        </span>
+                            <span v-else>
+                              <strong>{{ exit.customer }} </strong>
+                              - {{ exit.value.toFixed(2) }}€
+                            </span>
+                          </div>
+                          <div>
+                            <button
+                              class="btn btn-sm btn-warning me-1"
+                              @click="
+                                {
+                                  setExit(exit);
+                                }
+                              "
+                            >
+                              <i class="fas fa-edit"></i>
+                            </button>
+                            <button
+                              class="btn btn-sm btn-square btn-danger me-2"
+                              @click="
+                                () => {
+                                  isModalVisible = true;
+                                  exitDelete = exit.exit_id;
+                                }
+                              "
+                            >
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <button
-                          class="btn btn-sm btn-warning me-1"
-                          @click="
-                            {
-                              setExit(exit);
-                            }
-                          "
-                        >
-                          <i class="fas fa-edit"></i>
-                        </button>
-                        <button
-                          class="btn btn-sm btn-square btn-danger me-2"
-                          @click="
-                            () => {
-                              isModalVisible = true;
-                              exitDelete = exit.exit_id;
-                            }
-                          "
-                        >
-                          <i class="fas fa-trash"></i>
-                        </button>
+                      <div class="head-cell mt-2 border-bottom border-dark">
+                        {{
+                          month.exits
+                            .reduce((prev, curr) => {
+                              return (prev = prev + curr.value);
+                            }, 0)
+                            .toFixed(2)
+                        }}€
                       </div>
-                    </div>
-                  </div>
-                  <div class="head-cell mt-2 border-bottom border-dark">
-                    {{
-                      month.exits
-                        .reduce((prev, curr) => {
-                          return (prev = prev + curr.value);
-                        }, 0)
-                        .toFixed(2)
-                    }}€
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td class="p-0 head-cell">Totale</td>
-                <td class="p-0 full-total text-white bg-success">
-                  <div>{{ total }}€</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <ConfirmationModal
-            v-if="isModalVisible"
-            @close="closeModal"
-            @handleConfirmDelete="confirmDelete"
-            :title="'Sei sicuro di voler cancellare questa uscita?'"
-            :description="'Una volta cancellata questa uscita, non potrà più essere recuperata. Vuoi procedere?'"
-          />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="p-0 head-cell">Totale</td>
+                    <td class="p-0 full-total text-white bg-success">
+                      <div>{{ total }}€</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <ConfirmationModal
+                v-if="isModalVisible"
+                @close="closeModal"
+                @handleConfirmDelete="confirmDelete"
+                :title="'Sei sicuro di voler cancellare questa uscita?'"
+                :description="'Una volta cancellata questa uscita, non potrà più essere recuperata. Vuoi procedere?'"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <h2 class="text-center">
+            Non sono state inserite uscite per l'anno selezionato
+          </h2>
         </div>
       </div>
     </div>
